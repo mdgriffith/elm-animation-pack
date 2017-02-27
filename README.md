@@ -71,14 +71,13 @@ init =
 #### Updating Animation
 ```elm
     Animate animMsg ->
-        ( { model | styles = Animation.Pack.update animMsg model.styles }
-        , Cmd.none
-        )
-
-
+        let
+            (newStyles, cmds) = Animation.Pack.update animMsg model.styles
+        in
+            ( { model | styles = newStyles}
+            , cmds
+            )
 ```
-
-
 
 ## Warnings
 
@@ -86,8 +85,7 @@ Because this module is using a dict behind the scenes, you lose some of the stre
 
 Here are all the pitfalls you need to be aware of:
 
-  * If you try to animate a state that doesn't exist, you'll get a logged warning (i.e. runtime notification)
-  * If you try to 
+  * If you try to update/animate a state that doesn't exist, you'll get a logged warning (i.e. runtime notification) and _nothing else will happen_!
   * Be wary about spawning new animation states willy nilly.  In other words, be careful about using `Animation.Pack.add` all the time.
 
 
