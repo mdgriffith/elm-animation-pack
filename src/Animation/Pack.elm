@@ -1,9 +1,9 @@
-module Animation.Pack exposing (Pack, init, animate, queue, subscription, update, render, add, remove)
+module Animation.Pack exposing (Pack, init, animate, queue, subscription, update, render, animated, add, remove)
 
 {-|
 Manage your animation states!
 
-@docs Pack, init, animate, queue, subscription, update, render
+@docs Pack, init, animate, queue, subscription, update, render, animated
 
 
 # Dynamically adding or removing `Animation.State`s.
@@ -167,7 +167,23 @@ update animMsg (Pack mId states) =
         ( Pack mId newPack, cmds )
 
 
-{-| -}
+{-| Render an animation on an element.
+
+```
+    div (List.concat
+            [ Animation.Pack.render model.style MyStyle
+            , [ style
+                    [ ( "position", "absolute" )
+                    , ( "border-style", "dotted" )
+                    ]
+               ]
+            ]
+        )
+        [ text "My Animated Div" ]
+
+```
+
+-}
 render : Pack id msg -> id -> List (Html.Attribute msg)
 render (Pack _ states) id =
     case Dict.get (toName id) states of
@@ -176,3 +192,26 @@ render (Pack _ states) id =
 
         Just anim ->
             Animation.render anim
+
+
+{-| An alternate way to render an animation.
+
+Here's what it looks like
+
+```
+    (div |> Animation.Pack.animated model.style MyStyle)
+        [ style
+            [ ( "position", "absolute" )
+            , ( "border-style", "dotted" )
+            ]
+        ]
+        [ text "My Animated Div" ]
+
+```
+
+-}
+animated : Pack id msg -> id -> (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg) -> (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
+animated pack id node =
+    (\attrs children ->
+        node (render pack id ++ attrs) children
+    )
