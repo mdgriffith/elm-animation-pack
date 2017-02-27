@@ -37,13 +37,23 @@ init =
             ]
     }
 
--- ..
+-- .. add the subscription to your subs
    , subscriptions = (\model -> Animation.Pack.subscription Animate model.styles)
 
+-- .. Add an animation update command to your update function.
+    Animate animMsg ->
+        let
+            (newStyles, cmds) = Animation.Pack.update animMsg model.styles
+        in
+            ( { model | styles = newStyles}
+            , cmds
+            )
+
+
+
 ```
+#### Now you can animate!
 
-
-#### Starting multiple animations in your update function
 ```elm
     StartAnimation ->
         let
@@ -68,16 +78,11 @@ init =
             )
 ```
 
-#### Updating Animation
-```elm
-    Animate animMsg ->
-        let
-            (newStyles, cmds) = Animation.Pack.update animMsg model.styles
-        in
-            ( { model | styles = newStyles}
-            , cmds
-            )
-```
+
+## More Advanced Usage
+
+You can dynamically add an `Animation.State` to your pack by using `Animation.Pack.add`.  This is useful when you need to start animating something you didn't have when the app started!
+
 
 ## Warnings
 
@@ -86,7 +91,8 @@ Because this module is using a dict behind the scenes, you lose some of the stre
 Here are all the pitfalls you need to be aware of:
 
   * If you try to update/animate a state that doesn't exist, you'll get a logged warning (i.e. runtime notification) and _nothing else will happen_!
-  * Be wary about spawning new animation states willy nilly.  In other words, be careful about using `Animation.Pack.add` all the time.
+  * Be careful about using `Animation.Pack.add` all the time.  Use it only when you're _sure_ you need it.  Remember to `Animation.Pack.remove` any states you're not using.
+  * Don't use functions as keys for `Animation.Pack`.  If you do, you'll have a bad time.
 
 
 
