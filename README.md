@@ -8,7 +8,7 @@ Essentially this module uses a dict behind the scenes to keep track of your anim
 ## Code Example
 
 Initial model and subscription.
-```
+```elm
 import Color
 import Animation
 import Animation.Pack
